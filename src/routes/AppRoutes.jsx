@@ -27,6 +27,7 @@ import { Relatorios } from '../pages/Relatorios';
 import { Solicitacoes } from '../pages/Solicitacoes';
 import { Pacientes } from '../pages/Pacientes';
 import { PacienteDetalhes } from '../pages/PacientesDetalhes';
+import { SessaoDetalhes } from '../pages/SessaoDetalhes';
  
 /* ==============================
    Componente de rota protegida
@@ -180,6 +181,11 @@ export const AppRoutes = () => {
         <Route path="/pacientes/:id" element={
           <ProtectedRoute>
             <PacienteDetalhes /> {/* Escolhe dashboard de psicólogo ou paciente */}
+          </ProtectedRoute>
+        } />
+        <Route path="/sessao/:sessionId" element={
+          <ProtectedRoute>
+            <SessaoDetalhes /> {/* Escolhe dashboard de psicólogo ou paciente */}
           </ProtectedRoute>
         } />
 
