@@ -2,7 +2,7 @@
 
 Aplicação web moderna voltada para o gerenciamento de consultas psicológicas, construída com React 19 + Vite. Destina-se especialmente a atendimentos voluntários em universidades, organizações sociais e projetos comunitários.
 
-![Cuide+ Logo](public/logo.png)
+![Cuide+ Logo](public/logo.svg)
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](CHANGELOG.md)
 [![React](https://img.shields.io/badge/React-19.1.1-61dafb.svg)](https://reactjs.org/)
