@@ -16,7 +16,7 @@ export const PublicNavbar = () => {
 
     return (
         <>
-            <nav className="bg-white backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+            <nav className="bg-white backdrop-blur-md rounded-b-4xl border-white/20 sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 py-3 md:px-2 md:py-4">
                     <div className="flex items-center justify-between">
                         {/* logotipo */}
@@ -27,7 +27,7 @@ export const PublicNavbar = () => {
                                 <img
                                 src="/logo-big.svg"
                                 alt="logotipo site Cuide+"
-                                className="w-24 h-auto md:w-32 md:h-auto"
+                                className="w-34 h-auto md:w-42 md:h-auto"
                                 />
                                 
                                 <div className="absolute inset-1 bg-gradient-to-r from-light to-accent rounded-xl blur opacity-30 md:rounded-b-xl"></div>

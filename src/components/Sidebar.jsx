@@ -43,8 +43,8 @@ export const Sidebar = () => {
           { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },
           { to: '/solicitacoes', label: 'Solicitações', icon: Bell },
           { to: '/pacientes', label: 'Pacientes', icon: UserRound },
-          { to: '/chat-ia', label: 'Chat IA', icon: MessageCircle },
-          { to: '/relatorios', label: 'Relatórios', icon: BarChart3 }
+          { to: '/relatorios', label: 'Relatórios', icon: BarChart3 },
+          { to: '/chat-ia', label: 'Chat IA', icon: MessageCircle }
         ]
       : [
           { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -84,7 +84,7 @@ export const Sidebar = () => {
  
       {/* 📌 Sidebar principal */}
       <div
-        className={`fixed left-0 top-0 h-full w-64 bg-gradient-to-br border-3 from-white/90 to-white/40 backdrop-blur-md border-white/80 shadow-xl transform transition-transform duration-300 z-40 rounded-r-4xl ${
+        className={`fixed left-0 top-0 h-full w-64 bg-gradient-to-br border-3 from-white/60 to-white/40 backdrop-blur-md border-white/80 shadow-xl transform transition-transform duration-300 z-40 rounded-r-4xl ${
           // Se estiver aberta: fica visível (translate-x-0)
           // Se fechada em mobile: sai da tela à esquerda (-translate-x-full)
           // Em telas grandes (lg:), sempre visível (translate-x-0)

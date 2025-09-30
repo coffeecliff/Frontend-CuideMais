@@ -103,7 +103,7 @@ export const About = () => {
       </div>
 
       {/* Logo (direita) */}
-      <div className="md:w-1/2 flex justify-center">
+      <div className="md:w-1/2 flex justify-center ">
         <div className="glass-card rounded-3xl shadow-xl p-14">
           <img 
             src="/logo-big.svg" 
@@ -133,7 +133,10 @@ export const About = () => {
           <h2 className="text-3xl font-bold text-dark/70 text-center mb-8">Nossos Valores</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value, index) => (
-              <div key={index} className="glass-card rounded-2xl p-6 border shadow-lg text-center">
+              <div
+                key={index}
+                className="glass-card rounded-2xl p-6 border shadow-lg text-center transform transition duration-300 hover:scale-105"
+              >
                 {/* Ícone centralizado com fundo */}
                 <div className="w-24 h-24 flex items-center justify-center mx-auto mb-6">
                   {React.cloneElement(value.icon, { size: 60, className: "text-accent" })}

@@ -8,73 +8,76 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { ChevronLeft, Clock, Calendar, User, FileText, Edit3, Save, X } from 'lucide-react';
  
 export const SessaoDetalhes = () => {
-    const { sessionId } = useParams ();
-    const navigate = useNavigate ();
-    const { user } = useAuth ();
-    const [session, setSession] = useState (null);
-    const [patient, setPatient] = useState (null);
-    const [loading, setLoading] = useState (true);
-    const [editing, setEditing] = useState (false);
-    const [editNotes, setEditNotes] = useState ('');
-    const [editReport, setEditReport] = useState ('');
-    const [editStatus, setEditStatus] = useState ('');
-    {/* Teste */}
-    useEffect(() =>{
-        const loadSessionData = async () => {
-            try{
-                const sessionData = await mockApi.getSessionDetails(parseInt(sessionId));
-                setSession(sessionData);
-                setEditNotes(sessionData.notes || '');
-                setEditReport(sessionData.fullReport || '');
-                setEditStatus(sessionData.status);
+  const { sessionId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [session, setSession] = useState(null);
+  const [patient, setPatient] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [editNotes, setEditNotes] = useState('');
+  const [editReport, setEditReport] = useState('');
+  const [editStatus, setEditStatus] = useState('');
 
-                const patients = await mockApi.getPatients(user.id);
-                const patientData = patients.find(p => p.id === sessionData.patientId);
-                setPatient(patientData);
-            }catch(error) {
-                console.error('Erro ao carregar dados da sessão', error);
-                navigate('/pacientes');
-            }finally{
-                setLoading(false);
-            }
-        };
+  useEffect(() => {
+    const loadSessionData = async () => {
+      try {
+        const sessionData = await mockApi.getSessionDetails(parseInt(sessionId));
+        setSession(sessionData);
+        setEditNotes(sessionData.notes || '');
+        setEditReport(sessionData.fullReport || '');
+        setEditStatus(sessionData.status);
 
-        loadSessionData();
-        }, [sessionId, user.id, navigate]);
-        const handleSave = async () => {
-            try{
-                await mockApi.updateSessionStatus(session.id, editStatus);
-                await mockApi.updateSessionNotes(session.id, editNotes, editReport);
-                setSession({
-                    ...session,
-                    status: editStatus,
-                    notes: editNotes,
-                    fullReport: editReport
-                });
-                setEditing(false);
-            } catch(error) {
-                console.error('Erro ao salvar alterações', error);
-                
-            }
-        
-        }
-        const handleCancel = () => {
-            setEditNotes(session.edit || '');
-            setEditReport(session.fullReport || '');
-            setEditStatus(session.status);
-            setEditing(false);
-        }
-        if(loading) return <LoadingSpinner size='lg'/>;
-        if(!session || !patient) return null;
+        const patients = await mockApi.getPatients(user.id);
+        const patientData = patients.find(p => p.id === sessionData.patientId);
+        setPatient(patientData);
+      } catch (error) {
+        console.error('Erro ao carregar dados da sessão:', error);
+        navigate('/pacientes');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        const statusOption = [
-            {value: 'agendado', label: 'Agendado', color: 'bg-blue-100 text-dark'},
-            {value: 'iniciado', label: 'Iniciado', color: 'bg-yellow-100 text-dark'},
-            {value: 'concluido', label: 'Concluído', color: 'bg-green-100 text-dark'},
-            {value: 'cancelado', label: 'Cancelado', color: 'bg-red-100 text-dark'}
-        ];
+    loadSessionData();
+  }, [sessionId, user.id, navigate]);
 
-        const currentStatus = statusOption.find(s => s.value === session.status);
+  const handleSave = async () => {
+    try {
+      await mockApi.updateSessionStatus(session.id, editStatus);
+      await mockApi.updateSessionNotes(session.id, editNotes, editReport);
+      
+      setSession({
+        ...session,
+        status: editStatus,
+        notes: editNotes,
+        fullReport: editReport
+      });
+      
+      setEditing(false);
+    } catch (error) {
+      console.error('Erro ao salvar alterações:', error);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditNotes(session.notes || '');
+    setEditReport(session.fullReport || '');
+    setEditStatus(session.status);
+    setEditing(false);
+  };
+
+  if (loading) return <LoadingSpinner size="lg" />;
+  if (!session || !patient) return null;
+
+  const statusOptions = [
+    { value: 'agendado', label: 'Agendado', color: 'bg-blue-100 text-blue-800' },
+    { value: 'iniciado', label: 'Iniciado', color: 'bg-yellow-100 text-yellow-800' },
+    { value: 'concluido', label: 'Concluído', color: 'bg-green-100 text-green-800' },
+    { value: 'cancelado', label: 'Cancelado', color: 'bg-red-100 text-red-800' }
+  ];
+
+  const currentStatus = statusOptions.find(s => s.value === session.status);
 
         return (
             <div className="space-y-6">
@@ -83,10 +86,9 @@ export const SessaoDetalhes = () => {
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => navigate(`/pacientes/${patient.id}`)}
-                    className="flex items-center gap-2 bg-white text-light hover:bg-gray-50 hover:scale-105 active:scale-95 border border-gray-200 px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md group"
+                    className="flex items-center gap-2 cursor-pointer text-white font-extrabold hover:text-indigo-200 px-4 py-2 rounded-lg transition-colors duration-300"
                   >
-                    <ChevronLeft size={20} className="transition-transform duration-200 group-hover:-translate-x-1" />
-                    Voltar
+                    <ChevronLeft size={35} className="font-extrabold cursor-pointer"/>
                   </button>
                   <h1 className="text-3xl font-bold text-white">Detalhes da Sessão</h1>
                 </div>
@@ -184,7 +186,6 @@ export const SessaoDetalhes = () => {
               <Card>
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-dark" />
                     <h3 className="text-xl font-bold text-dark">Anotações Rápidas</h3>
                   </div>
          
@@ -193,7 +194,7 @@ export const SessaoDetalhes = () => {
                       value={editNotes}
                       onChange={(e) => setEditNotes(e.target.value)}
                       placeholder="Adicione anotações rápidas sobre a sessão..."
-                      className="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-light focus:border-transparent resize-none"
+                      className="w-full h-24 p-3 border bg-white/50 border-gray-300 rounded-lg focus:ring-2 focus:ring-light focus:border-transparent resize-none"
                     />
                   ) : (
                     <div className="bg-white/50 p-4 rounded-lg min-h-[100px]">
@@ -211,7 +212,6 @@ export const SessaoDetalhes = () => {
               <Card>
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-dark" />
                     <h3 className="text-xl font-bold text-dark">Relatório Completo da Sessão</h3>
                   </div>
          
@@ -220,7 +220,7 @@ export const SessaoDetalhes = () => {
                       value={editReport}
                       onChange={(e) => setEditReport(e.target.value)}
                       placeholder="Relatório detalhado da sessão..."
-                      className="w-full h-64 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-light focus:border-transparent resize-none font-mono text-sm"
+                      className="w-full h-64 p-3 border bg-white/50 border-gray-300 rounded-lg focus:ring-2 focus:ring-light focus:border-transparent resize-none font-mono text-sm"
                     />
                   ) : (
                     <div className="bg-white/50 p-4 rounded-lg min-h-[300px]">

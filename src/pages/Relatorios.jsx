@@ -172,7 +172,8 @@ export const Relatorios = () => {
             </Card>
 
             <Card>
-              <h2 className="text-xl font-semibold text-dark mb-4 flex items-center gap-2">
+            <div className='bg-white/50 rounded-2xl mb-10 h-full'>
+              <h2 className="text-xl font-semibold  text-dark mb-4 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-red-500" />
                 Alertas de Risco
               </h2>
@@ -206,6 +207,7 @@ export const Relatorios = () => {
                     </div>
                   ))
                 )}
+              </div>
               </div>
             </Card>
           </div>

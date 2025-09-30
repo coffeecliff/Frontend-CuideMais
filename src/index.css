@@ -5,11 +5,11 @@
    Paleta de cores personalizada
    ============================== */
 @theme {
-  --color-dark: #3e2e5d;       /* Azul bem escuro */
-  --color-medium: #685293;     /* Azul médio */
-  --color-light: #8582e4;      /* Azul claro */
-  --color-accent: #a18ef2;     /* Azul/acento esverdeado */
-  --color-background: #F2EFE9; /* Bege claro para fundo */
+  --color-dark: #3e2e5d;       /* Indigo escuro */
+  --color-medium: #685293;     /* Indigo claro */
+  --color-light: #8582e4;      /* Roxo */
+  --color-accent: #a18ef2;     /* Lilás */
+  --color-background: #F2EFE9; /* Cinza claro para fundo */
 }
 
 /* ==============================
@@ -65,7 +65,7 @@
    Estilo global do body
    ============================== */
 body {
-  font-family: montserrat; /* Fontes */
+  font-family: 'Montserrat'; /* Fontes */
   font-weight: 500; /* Peso médio */
   background: linear-gradient(
     135deg,
