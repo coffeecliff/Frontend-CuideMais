@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { mockApi } from '../services/mockApi';
-import { Calendar, UserRound, Bell , CheckCheck } from 'lucide-react';
+import { Calendar, UserRound, Bell, CheckCheck } from 'lucide-react';
 import { Card } from '../components/Card';
 import { KpiCard } from '../components/KPIcard';
+import { appointmentService, patientService, requestService } from '../services/apiService';
 
 export const DashboardPsicologo = () => {
   const { user } = useAuth();
@@ -11,14 +11,17 @@ export const DashboardPsicologo = () => {
   const [patients, setPatients] = useState([]);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
- 
   const loadData = useCallback(async () => {
     try {
+      console.log('Carregando dados do dashboard para psicólogo:', user.id);
       const [appointmentsData, patientsData, requestsData] = await Promise.all([
-        mockApi.getAppointments(user.id, 'psicologo'),
-        mockApi.getPatients(user.id),
-        mockApi.getRequests(user.id)
+        appointmentService.getAppointments(),
+        patientService.getPatients(),
+        requestService.getRequests('pendente')
       ]);
+      console.log('Agendamentos:', appointmentsData);
+      console.log('Pacientes:', patientsData);
+      console.log('Solicitações:', requestsData);
       setAppointments(appointmentsData);
       setPatients(patientsData);
       setRequests(requestsData);
@@ -28,23 +31,19 @@ export const DashboardPsicologo = () => {
       setLoading(false);
     }
   }, [user.id]);
- 
   useEffect(() => {
     loadData();
   }, [loadData]);
- 
+  // Recarrega quando a página fica visível e a cada 5 segundos
   useEffect(() => {
     const handleFocus = () => loadData();
     window.addEventListener('focus', handleFocus);
-   
-    const interval = setInterval(loadData, 5000);
-   
+    const interval = setInterval(loadData, 5000); // Recarrega a cada 5 segundos
     return () => {
       window.removeEventListener('focus', handleFocus);
       clearInterval(interval);
     };
   }, [loadData]);
- 
   if (loading) {
     return (
       <div className="flex justify-center items-center py-10">
@@ -52,44 +51,46 @@ export const DashboardPsicologo = () => {
       </div>
     );
   }
- 
+  // Filtra agendamentos de hoje para o psicólogo logado (apenas agendados)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
- 
   const todayAppointments = appointments.filter(apt => {
-    const appointmentDate = new Date(apt.date);
+    const appointmentDate = new Date(apt.appointment_date || apt.date);
     appointmentDate.setHours(0, 0, 0, 0);
- 
     const isToday = appointmentDate.getTime() === today.getTime();
-    const isPsychologist = apt.psychologistId === user.id;
+    const isPsychologist = (apt.psychologist_id || apt.psychologistId) === user.id;
     const isScheduled = apt.status === 'agendado';
- 
     return isToday && isPsychologist && isScheduled;
   });
- 
+  // Estatísticas baseadas nos dados reais do psicólogo
   const totalPatients = patients.length;
   const completedSessions = appointments.filter(apt =>
-    apt.status === 'concluido' && apt.psychologistId === user.id
+    apt.status === 'concluido' && (apt.psychologist_id || apt.psychologistId) === user.id
   ).length;
   const pendingRequests = requests.filter(req =>
-    req.status === 'pendente' && req.preferredPsychologist === user.id
+    req.status === 'pendente' && req.preferred_psychologist === user.id
   ).length;
- 
-  const upcomingAppointments = appointments.filter(apt =>
-    new Date(apt.date) >= new Date() &&
-    apt.status === 'agendado' &&
-    apt.psychologistId === user.id
-  ).slice(0, 5);
- 
+  // Próximos agendamentos do psicólogo
+  const upcomingAppointments = appointments.filter(apt => {
+    const appointmentDate = new Date(apt.appointment_date || apt.date);
+    const isPsychologist = (apt.psychologist_id || apt.psychologistId) === user.id;
+    const isScheduled = apt.status === 'agendado';
+    const isFuture = appointmentDate >= new Date();
+    return isFuture && isScheduled && isPsychologist;
+  }).slice(0, 5);
+  // Verifica se é um psicólogo novo (sem dados)
   const isNewPsychologist = totalPatients === 0 && appointments.length === 0 && requests.length === 0;
- 
+
+
+
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white">Meu Dashboard</h1>
         <p className="text-white">Bem-vindo, {user.name}</p>
       </div>
- 
+
       {/* Mensagem para psicólogos novos */}
       {isNewPsychologist && (
         <div className="bg-purple-50 rounded-lg shadow-md p-6 text-center border-3 border-dashed border-purple-300">
@@ -104,36 +105,36 @@ export const DashboardPsicologo = () => {
           </p>
         </div>
       )}
- 
-          {/* KPIs */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-  <KpiCard
-    icon={UserRound}
-    value={totalPatients}
-    label="Pacientes Ativos"
-    iconColor="text-dark"
-  />
-  <KpiCard
-    icon={Calendar}
-    value={todayAppointments.length}
-    label="Sessões Hoje"
-    iconColor="text-dark"
-  />
-  <KpiCard
-    icon={CheckCheck}
-    value={completedSessions}
-    label="Sessões Concluídas"
-    iconColor="text-dark"
-  />
-  <KpiCard
-    icon={Bell}
-    value={pendingRequests}
-    label="Solicitações Pendentes"
-    iconColor="text-orange-600"
-  />
-</div>
- 
- 
+
+      {/* KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <KpiCard
+          icon={UserRound}
+          value={totalPatients}
+          label="Pacientes Ativos"
+          iconColor="text-dark"
+        />
+        <KpiCard
+          icon={Calendar}
+          value={todayAppointments.length}
+          label="Sessões Hoje"
+          iconColor="text-dark"
+        />
+        <KpiCard
+          icon={CheckCheck}
+          value={completedSessions}
+          label="Sessões Concluídas"
+          iconColor="text-dark"
+        />
+        <KpiCard
+          icon={Bell}
+          value={pendingRequests}
+          label="Solicitações Pendentes"
+          iconColor="text-orange-600"
+        />
+      </div>
+
+
       {/* Próximos Agendamentos */}
       {!isNewPsychologist && (
         <Card className="bg-blue-50">
@@ -164,15 +165,14 @@ export const DashboardPsicologo = () => {
                       </p>
                       <p className="text-xs text-dark/60">{appointment.description}</p>
                     </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      appointment.status === 'agendado'
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${appointment.status === 'agendado'
                         ? 'bg-blue-100 text-blue-800'
                         : appointment.status === 'iniciado'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-green-100 text-green-800'
-                    }`}>
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-green-100 text-green-800'
+                      }`}>
                       {appointment.status === 'agendado' ? 'Agendado' :
-                       appointment.status === 'iniciado' ? 'Iniciado' : 'Concluído'}
+                        appointment.status === 'iniciado' ? 'Iniciado' : 'Concluído'}
                     </span>
                   </div>
                 );
