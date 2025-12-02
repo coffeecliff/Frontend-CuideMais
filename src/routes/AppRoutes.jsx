@@ -21,11 +21,11 @@ import { NotFound } from '../pages/NotFound';
 // Páginas protegidas (apenas para usuários autenticados)
 import { DashboardPsicologo } from '../pages/DashboardPsicologo';
 import { DashboardPaciente } from '../pages/DashboardPaciente';
-// import { Agendamento } from '../pages/Agendamentos';
-// import { ChatIA } from '../pages/ChatIA';
+import { Agendamento } from '../pages/Agendamentos';
+import { ChatIA } from '../pages/ChatIA';
 // import { Relatorios } from '../pages/Relatorios';
-// import { Solicitacoes } from '../pages/Solicitacoes';
-// import { Pacientes } from '../pages/Pacientes';
+import { Solicitacoes } from '../pages/Solicitacoes';
+import { Pacientes } from '../pages/Pacientes';
 // import { PacienteDetalhes } from '../pages/PacientesDetalhes';
 // import { SessaoDetalhes } from '../pages/SessaoDetalhes';
  
@@ -153,7 +153,7 @@ export const AppRoutes = () => {
             <Dashboard /> 
           </ProtectedRoute>
         } />
-         {/* <Route path="/agendamento" element={
+         <Route path="/agendamento" element={
           <ProtectedRoute>
             <Agendamento />
           </ProtectedRoute>
@@ -163,11 +163,11 @@ export const AppRoutes = () => {
             <ChatIA />
           </ProtectedRoute>
         } />
-         <Route path="/relatorios" element={
+         {/* <Route path="/relatorios" element={
           <ProtectedRoute>
             <Relatorios /> 
           </ProtectedRoute>
-        } />
+        } />*/}
         <Route path="/solicitacoes" element={
           <ProtectedRoute>
             <Solicitacoes />
@@ -178,6 +178,7 @@ export const AppRoutes = () => {
             <Pacientes /> 
           </ProtectedRoute>
         } />
+        {/*
         <Route path="/pacientes/:id" element={
           <ProtectedRoute>
             <PacienteDetalhes /> 

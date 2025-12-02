@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { mockApi } from '../services/mockApi';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -18,45 +17,45 @@ export const Solicitacoes = () => {
   }, [user.id]);
  
   const loadRequests = async () => {
-    setLoading(true);
-    try {
-      const data = await mockApi.getRequests(user.id);
-      // Filtrar apenas solicitações pendentes
-      const pendingRequests = data.filter(req => req.status === 'pendente');
-      setRequests(pendingRequests);
-    } catch (error) {
-      console.error('Erro ao carregar solicitações:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const data = await requestService.getRequests(); // pega todas ou filtradas pelo backend
+    // filtra apenas pendentes
+    const pendentes = data.filter(req => req.status === 'pendente');
+    setRequests(pendentes);
+  } catch (error) {
+    console.error('Erro ao carregar solicitações:', error);
+  } finally {
+    setLoading(false);
+  }
+};
  
   const handleAcceptRequest = async (requestId, requestData) => {
     setProcessingRequests(prev => new Set([...prev, requestId]));
+   
     try {
-      // Verificar se já existe paciente com mesmo email
-      const existingPatients = await mockApi.getPatients(user.id);
-      const duplicatePatient = existingPatients.find(p => p.email === requestData.patientEmail);
-      if (duplicatePatient) {
-        toast.error('Este paciente já está cadastrado em sua lista!');
-        return;
+      try {
+        await patientService.updatePatient(requestData.patient_id, {
+          patient_id: requestData.patient_id,
+          name: requestData.patient_name,
+          email: requestData.patient_email,
+          phone: requestData.patient_phone,
+          birth_date: requestData.patient_birth_date,
+          psychologist_id: user.id
+        });
+      } catch (patientError) {
+        // Se paciente já existe, continua o processo
+        if (!patientError.message.includes('já está cadastrado')) {
+          throw patientError;
+        }
       }
  
-      // Criar novo paciente
-      await mockApi.createPatient({
-        name: requestData.patientName,
-        email: requestData.patientEmail,
-        phone: requestData.patientPhone,
-        birthDate: '1990-01-01', // Valor padrão - pode ser atualizado depois
-        age: 30, // Valor padrão - pode ser atualizado depois
-        status: 'Ativo',
-        psychologistId: user.id
-      });
- 
       // Atualizar status da solicitação
-      await mockApi.updateRequestStatus(requestId, 'aceito', 'Paciente aceito e cadastrado no sistema');
+      await requestService.updateRequestStatus(requestId, 'aceito');
+     
       // Remover solicitação da lista
       setRequests(prev => prev.filter(req => req.id !== requestId));
+     
       toast.success('Solicitação aceita! Paciente adicionado à sua lista.');
     } catch (error) {
       console.error('Erro ao aceitar solicitação:', error);
@@ -72,10 +71,13 @@ export const Solicitacoes = () => {
  
   const handleRejectRequest = async (requestId) => {
     setProcessingRequests(prev => new Set([...prev, requestId]));
+   
     try {
-      await mockApi.updateRequestStatus(requestId, 'rejeitado', 'Solicitação rejeitada pelo psicólogo');
+      await requestService.updateRequestStatus(requestId, 'rejeitado');
+     
       // Remover solicitação da lista
       setRequests(prev => prev.filter(req => req.id !== requestId));
+     
       toast.success('Solicitação rejeitada.');
     } catch (error) {
       console.error('Erro ao rejeitar solicitação:', error);

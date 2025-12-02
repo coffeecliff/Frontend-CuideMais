@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { mockApi } from '../services/mockApi';
 import { Card } from '../components/Card';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { Users } from 'lucide-react';
+import { patientService } from '../services/apiService';
  
 export const Pacientes = () => {
   const { user } = useAuth();
@@ -15,7 +15,7 @@ export const Pacientes = () => {
   const loadPatients = async () => {
     setLoading(true);
     try {
-      const data = await mockApi.getPatients(user.id);
+      const data = await patientService.getPatients(user.id);
       setPatients(data);
     } catch (error) {
       console.error('Erro ao carregar pacientes:', error);
